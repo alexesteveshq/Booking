@@ -1,0 +1,45 @@
+version: '3.7'
+services:
+
+    frontend:
+      build:
+        context: ./frontend
+      ports:
+        - "3000:3000"
+      networks:
+        - app-network
+
+    backend:
+      build:
+        context: ./backend/
+      restart: unless-stopped
+      environment:
+        MYSQL_DATABASE: 'booking'
+        MYSQL_ROOT_PASSWORD: '12345'
+        MYSQL_PASSWORD: '12345'
+        MYSQL_USER: 'root'
+      working_dir: /var/www
+      volumes:
+        - ./backend:/var/www
+      ports:
+        - "8000:8000"
+      networks:
+        - app-network
+        - db
+
+    appdb:
+      image: mysql:5.7
+      restart: unless-stopped
+      environment:
+        MYSQL_DATABASE: 'booking'
+        MYSQL_ROOT_PASSWORD: '12345'
+        MYSQL_PASSWORD: '13245'
+      ports:
+        - 3306:3306
+      networks:
+        - db
+
+networks:
+  app-network:
+    driver: bridge
+  db:
